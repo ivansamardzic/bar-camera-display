@@ -21,8 +21,8 @@ export default function BarCameraDisplay() {
 
         {/* Camera Feeds Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <CameraFeed title="Stages/Ale Line" location="Main Entrance" streamUrl="/security-camera-view-of-bar-entrance-with-people-i.jpg" />
-          <CameraFeed title="Trin Line" location="Side Entrance" streamUrl="/security-camera-view-of-bar-side-entrance-with-que.jpg" />
+          <CameraFeed title="Stages/Ale Line" location="Main Entrance" streamUrl="http://localhost:8000/mjpeg" />
+          <CameraFeed title="Trin Line" location="Side Entrance" streamUrl="http://localhost:8000/mjpeg" />
         </div>
 
         {/* Footer Info */}
