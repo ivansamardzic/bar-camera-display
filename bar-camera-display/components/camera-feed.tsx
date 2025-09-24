@@ -62,13 +62,13 @@ export function CameraFeed({ title, location, streamUrl }: CameraFeedProps) {
           />
         )}
 
-        {/* Overlay Info */}
+        {/* Overlay Info
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
           <div className="flex items-center justify-between text-white text-sm">
             <span className="font-mono">{lastUpdate.toLocaleTimeString()}</span>
             <span className="bg-black/40 px-2 py-1 rounded text-xs">640x480</span>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Status Bar */}
