@@ -17,8 +17,8 @@ export default function BarCameraDisplay() {
 
         {/* Camera Feeds Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <CameraFeed title="Stages/Ale Line" location="Main Entrance" streamUrl="https://letsgetsendy.bouncedat.tech/cam/index.m3u8" />
-          <CameraFeed title="Trin Line" location="Main Entrance" streamUrl="https://letsgetsendy.bouncedat.tech/cam/index.m3u8" />
+          <CameraFeed title="Stages & Ale Line" location="Princess St. Main Entrance" streamUrl="https://letsgetsendy.bouncedat.tech/cam/index.m3u8" />
+          <CameraFeed title="Trin Line" location="Division St. Main Entrance" streamUrl="https://letsgetsendy.bouncedat.tech/cam/index.m3u8" />
         </div>
 
         {/* Footer Info */}
