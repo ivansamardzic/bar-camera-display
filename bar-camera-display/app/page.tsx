@@ -22,16 +22,9 @@ export default function BarCameraDisplay() {
         </div>
 
         {/* Footer Info */}
-        <footer className="mt-12 pt-6 border-t border-border">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-4">
-              <span className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-success rounded-full"></div>
-                System Online
-              </span>
-              <span>Resolution: 1920x1080</span>
-            </div>
-          </div>
+        <footer className="mt-12 pt-6 border-t border-border text-sm text-muted-foreground text-center">
+          © 2025 Gooners LTD. All rights reserved.
+          
         </footer>
       </div>
     </div>

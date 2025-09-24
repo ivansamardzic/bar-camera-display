@@ -11,62 +11,105 @@ interface CameraFeedProps {
 }
 
 export function CameraFeed({ title, location, streamUrl }: CameraFeedProps) {
-  const [isLoading, setIsLoading] = useState(true)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isOnline, setIsOnline] = useState(false)
+  const [resolution, setResolution] = useState<{ width: number; height: number } | null>(null)
 
   useEffect(() => {
     let hls: Hls | null = null
+    const video = videoRef.current
+    if (!video) return
 
-    if (videoRef.current) {
-      if (Hls.isSupported()) {
-        hls = new Hls()
-        hls.loadSource(streamUrl)
-        hls.attachMedia(videoRef.current)
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          videoRef.current?.play()
-          setIsLoading(false)
-        })
-      } else if (videoRef.current.canPlayType("application/vnd.apple.mpegurl")) {
-        // Safari natively supports HLS
-        videoRef.current.src = streamUrl
-        videoRef.current.addEventListener("loadedmetadata", () => {
-          videoRef.current?.play()
-          setIsLoading(false)
-        })
+    const updateResolution = () => {
+      if (video.videoWidth && video.videoHeight) {
+        setResolution({ width: video.videoWidth, height: video.videoHeight })
       }
     }
 
+    video.addEventListener("loadedmetadata", updateResolution)
+    video.addEventListener("resize", updateResolution)
+
+    if (Hls.isSupported()) {
+      hls = new Hls({
+        liveSyncDuration: 3,
+        liveMaxLatencyDuration: 5,
+        maxBufferLength: 30,
+      })
+      hls.loadSource(streamUrl)
+      hls.attachMedia(video)
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        video.play()
+        setIsOnline(true)
+        setIsLoading(false)
+      })
+      hls.on(Hls.Events.ERROR, (event, data) => {
+        if (data.fatal) setIsOnline(false)
+      })
+    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      video.src = streamUrl
+      video.addEventListener("loadedmetadata", () => {
+        video.play()
+        setIsOnline(true)
+        setIsLoading(false)
+      })
+      video.addEventListener("error", () => setIsOnline(false))
+    }
+
     return () => {
-      if (hls) {
-        hls.destroy()
-      }
+      video.removeEventListener("loadedmetadata", updateResolution)
+      video.removeEventListener("resize", updateResolution)
+      if (hls) hls.destroy()
     }
   }, [streamUrl])
 
   return (
     <Card className="bg-card border-border overflow-hidden">
+      {/* Header */}
       <div className="p-4 border-b border-border flex items-center justify-between">
         <div>
           <h3 className="text-lg font-medium text-card-foreground">{title}</h3>
           <p className="text-sm text-muted-foreground">{location}</p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-success rounded-full animate-pulse"></div>
-          <span className="text-xs text-muted-foreground">LIVE</span>
+          <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+          <span className="text-xs text-muted-foreground font-semibold">LIVE</span>
         </div>
       </div>
 
-      <div className="relative aspect-video bg-muted">
+      {/* Video Player */}
+      <div className="relative aspect-video bg-muted group">
         {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center justify-center z-10">
             <div className="flex flex-col items-center gap-2">
               <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
               <span className="text-sm text-muted-foreground">Loading feed...</span>
             </div>
           </div>
         )}
-        <video ref={videoRef} className="w-full h-full object-cover" controls muted />
+        <video
+          ref={videoRef}
+          className="w-full h-full object-cover"
+          controls
+          autoPlay
+          muted
+          playsInline
+        />
       </div>
+
+      {/* Footer */}
+      <footer className="pt-4 border-t border-border">
+        <div className="flex items-center justify-between text-sm text-muted-foreground p-4">
+          <div className="flex items-center gap-4">
+            <span>{isOnline ? "System Online" : "Offline"}</span>
+            <span>
+              Resolution: {resolution ? `${resolution.width}x${resolution.height}` : "Loading..."}
+            </span>
+          </div>
+        </div>
+      </footer>
+
+
     </Card>
   )
 }
