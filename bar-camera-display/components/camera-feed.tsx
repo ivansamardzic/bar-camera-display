@@ -72,8 +72,10 @@ export function CameraFeed({ title, location, streamUrl }: CameraFeedProps) {
           <p className="text-sm text-muted-foreground">{location}</p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-          <span className="text-xs text-muted-foreground font-semibold">LIVE</span>
+          {isOnline && <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>}
+          <span className="text-xs text-muted-foreground font-semibold">
+            {isOnline ? "LIVE" : "Reconnecting..."}
+          </span>
         </div>
       </div>
 
@@ -90,7 +92,6 @@ export function CameraFeed({ title, location, streamUrl }: CameraFeedProps) {
         <video
           ref={videoRef}
           className="w-full h-full object-cover"
-          controls
           autoPlay
           muted
           playsInline
@@ -99,7 +100,7 @@ export function CameraFeed({ title, location, streamUrl }: CameraFeedProps) {
 
       {/* Footer */}
       <footer className="pt-4 border-t border-border">
-        <div className="flex items-center justify-between text-sm text-muted-foreground p-4">
+        <div className="flex items-center justify-between text-sm text-muted-foreground p-4"> 
           <div className="flex items-center gap-4">
             <span>{isOnline ? "System Online" : "Offline"}</span>
             <span>
