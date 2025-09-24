@@ -5,7 +5,7 @@ import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Queen\'s U Bar Line Monitor',
+  title: 'barbud.ca',
   description: 'Live camera feeds showing current line status at Queen\'s University Bars',
   generator: 'v0.app',
 }

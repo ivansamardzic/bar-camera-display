@@ -19,7 +19,7 @@ export default function BarCameraDisplay() {
         <header className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-2xl md:text-3xl font-semibold text-foreground">
-              Queen's University Bar Line Monitor
+              BarBud
             </h1>
             <p className="text-muted-foreground mt-1">
               Live camera feeds showing current line status
