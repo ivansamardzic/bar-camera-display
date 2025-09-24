@@ -18,7 +18,7 @@ Run on Windows:
   set RTSP_URL=rtsp://username:password@192.168.2.38:554/stream1
   uvicorn app:app --host 0.0.0.0 --port 8000
 
-  # to run backend locally
+  # to run frontend locally
   npm run dev 
 """
 
