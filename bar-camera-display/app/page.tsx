@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { CameraFeed } from "@/components/camera-feed"
+import DarkModeToggle from "@/components/ui/darkmode";
 
 export default function BarCameraDisplay() {
   const cameras = [
@@ -14,6 +15,7 @@ export default function BarCameraDisplay() {
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 relative">
+      <DarkModeToggle /> 
       <div className="mx-auto max-w-7xl relative">
         {/* Header */}
         <header className="mb-8 flex items-center justify-between">
