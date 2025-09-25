@@ -5,9 +5,9 @@ import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'barbud.ca',
+  title: 'barbud',
   description: 'Live camera feeds showing current line status at Queen\'s University Bars',
-  generator: 'v0.app',
+  generator: 'gooners.app',
 }
 
 export default function RootLayout({
