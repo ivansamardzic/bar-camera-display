@@ -8,9 +8,17 @@ interface CameraFeedProps {
   title: string
   location: string
   streamUrl: string
+  onStatusChange?: (isOnline: boolean) => void
+  onResolutionChange?: (resolution: string) => void
 }
 
-export function CameraFeed({ title, location, streamUrl }: CameraFeedProps) {
+export function CameraFeed({
+  title,
+  location,
+  streamUrl,
+  onStatusChange,
+  onResolutionChange,
+}: CameraFeedProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isOnline, setIsOnline] = useState(false)
@@ -21,8 +29,7 @@ export function CameraFeed({ title, location, streamUrl }: CameraFeedProps) {
   useEffect(() => {
     const updateTime = () => {
       const now = new Date()
-      // Apply a 5 second delay (stream latency)
-      now.setSeconds(now.getSeconds() - 5)
+      now.setSeconds(now.getSeconds() - 5) // 5 sec latency
       setCurrentTime(now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }))
     }
     updateTime()
@@ -38,7 +45,9 @@ export function CameraFeed({ title, location, streamUrl }: CameraFeedProps) {
 
     const updateResolution = () => {
       if (video.videoWidth && video.videoHeight) {
+        const resString = `${video.videoWidth}x${video.videoHeight}`
         setResolution({ width: video.videoWidth, height: video.videoHeight })
+        onResolutionChange?.(resString)
       }
     }
 
@@ -56,19 +65,27 @@ export function CameraFeed({ title, location, streamUrl }: CameraFeedProps) {
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         video.play()
         setIsOnline(true)
+        onStatusChange?.(true)
         setIsLoading(false)
       })
       hls.on(Hls.Events.ERROR, (event, data) => {
-        if (data.fatal) setIsOnline(false)
+        if (data.fatal) {
+          setIsOnline(false)
+          onStatusChange?.(false)
+        }
       })
     } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
       video.src = streamUrl
       video.addEventListener("loadedmetadata", () => {
         video.play()
         setIsOnline(true)
+        onStatusChange?.(true)
         setIsLoading(false)
       })
-      video.addEventListener("error", () => setIsOnline(false))
+      video.addEventListener("error", () => {
+        setIsOnline(false)
+        onStatusChange?.(false)
+      })
     }
 
     return () => {
@@ -87,7 +104,7 @@ export function CameraFeed({ title, location, streamUrl }: CameraFeedProps) {
           <p className="text-sm text-muted-foreground">{location}</p>
         </div>
         <div className="flex items-center gap-2">
-          {isOnline && <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>}
+          {isOnline && <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>}
           <span className="text-xs text-muted-foreground font-semibold">
             {isOnline ? "LIVE" : "Reconnecting..."}
           </span>
@@ -105,20 +122,14 @@ export function CameraFeed({ title, location, streamUrl }: CameraFeedProps) {
           </div>
         )}
 
-        {/* Overlay clock (top-right corner) */}
+        {/* Overlay clock */}
         {isOnline && (
           <div className="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded-md z-10">
             {currentTime}
           </div>
         )}
 
-        <video
-          ref={videoRef}
-          className="w-full h-full object-cover"
-          autoPlay
-          muted
-          playsInline
-        />
+        <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
       </div>
 
       {/* Footer */}
