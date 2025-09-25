@@ -15,7 +15,22 @@ export function CameraFeed({ title, location, streamUrl }: CameraFeedProps) {
   const [isLoading, setIsLoading] = useState(true)
   const [isOnline, setIsOnline] = useState(false)
   const [resolution, setResolution] = useState<{ width: number; height: number } | null>(null)
+  const [currentTime, setCurrentTime] = useState<string>("")
 
+  // Update overlay clock
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date()
+      // Apply a 5 second delay (stream latency)
+      now.setSeconds(now.getSeconds() - 5)
+      setCurrentTime(now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }))
+    }
+    updateTime()
+    const interval = setInterval(updateTime, 1000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Stream setup
   useEffect(() => {
     let hls: Hls | null = null
     const video = videoRef.current
@@ -72,7 +87,7 @@ export function CameraFeed({ title, location, streamUrl }: CameraFeedProps) {
           <p className="text-sm text-muted-foreground">{location}</p>
         </div>
         <div className="flex items-center gap-2">
-          {isOnline && <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>}
+          {isOnline && <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>}
           <span className="text-xs text-muted-foreground font-semibold">
             {isOnline ? "LIVE" : "Reconnecting..."}
           </span>
@@ -89,6 +104,14 @@ export function CameraFeed({ title, location, streamUrl }: CameraFeedProps) {
             </div>
           </div>
         )}
+
+        {/* Overlay clock (top-right corner) */}
+        {isOnline && (
+          <div className="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded-md z-10">
+            {currentTime}
+          </div>
+        )}
+
         <video
           ref={videoRef}
           className="w-full h-full object-cover"
@@ -100,7 +123,7 @@ export function CameraFeed({ title, location, streamUrl }: CameraFeedProps) {
 
       {/* Footer */}
       <footer className="pt-4 border-t border-border">
-        <div className="flex items-center justify-between text-sm text-muted-foreground p-4"> 
+        <div className="flex items-center justify-between text-sm text-muted-foreground p-4">
           <div className="flex items-center gap-4">
             <span>{isOnline ? "System Online" : "Offline"}</span>
             <span>
@@ -109,8 +132,6 @@ export function CameraFeed({ title, location, streamUrl }: CameraFeedProps) {
           </div>
         </div>
       </footer>
-
-
     </Card>
   )
 }
